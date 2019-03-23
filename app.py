@@ -16,34 +16,58 @@ def load_data():
 
 
 def user_input():
-    return input("Enter word for definition: ")
+    return input("Enter word for definition: ").lower()
 
 
 def get_dict_value(key):
-    match = get_closest_match(key)
-    if match in data:
+    if key in data:
+        return data[key]
+
+    elif len(get_closest_match(key)) > 0:
+        return choose_match(key)
+
+    return []
+
+
+def choose_match(key):
+    match = get_closest_match(key)[0]
+    yn = input("Did you mean %s instead? (y/n) " % match)
+    if yn is "y":
         return data[match]
-    else:
+    elif yn is "n":
         return []
+    else:
+        return "Invalid input."
 
 
 def get_closest_match(key):
-    keys = data.keys()
-    key = key.lower()
-    return get_close_matches(key, keys)[0]
+    return get_close_matches(key, data.keys())
+
+
+def print_result(values):
+    if type(values) is str:
+        print(values)
+
+    elif type(values) is list:
+        if values:
+            print_values(values)
+        else:
+            print("No definitions were found.")
 
 
 def print_values(values):
-    if values:
-        for value in values:
-            print(value)
-    else:
-        print("No definitions were found.")
+    for value in values:
+        position = str(values.index(value) + 1) + ". "
+        print(position + value)
 
 
 """
-Run Dictionary
+Run App
 """
+operate = True
+
 data = load_data()
-result = get_dict_value(user_input())
-print_values(result)
+
+while operate is True:
+    result = get_dict_value(user_input())
+    print_result(result)
